@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Array Visual</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid grey;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="stopAnimation();">stopAnimation</button>
+    <button onclick="playStoryboard();">PlayStoryboard</button>
+    <button onclick="quickSort3(numbers, 0, numbers.length - 1);">quickSort3</button>
+    <button onclick="testController();">testController</button>
+    <canvas></canvas>
+    <script src="eventhandler.js"></script>
+    <script src="shape2D.js"></script>
+    <script src="AnimationController.js"></script>
+    <script src="quicksort3Lib.js"></script>
+
+    <script>
+        function testController()
+        {
+            aniCtrl.addLinearMotion(circle2, [
+                { x: 300, y: 500, duration: 2000 },
+                { x: 700, y: 500, duration: 2000 },
+                { x: 200, y: 300, duration: 2000 }
+            ]);
+
+            aniCtrl.addLinearMotion(circle3, [
+                { x: 100, y: 200, duration: 2000 },
+                { x: 400, y: 700, duration: 2000 },
+                { x: 400, y: 300, duration: 2000 },
+                { x: 700, y: 100, duration: 2000 },
+                { x: 600, y: 600, duration: 2000 }
+            ]);
+
+            /*
+            let circle2 = new Circle(300, 300, 20, 'A', '#00796B', '#5D4037', 'white');
+            circle2.setCanvas('canvas');
+
+            let circle3 = new Circle(400, 300, 20, 'B', '#00796B', '#5D4037', 'white');
+            circle3.setCanvas('canvas');
+
+            //circle3.onAnimationEnd = new EventHandler();
+            //circle3.onAnimationEnd.addHandler(function() {alert('done')});
+            aniCtrl.start();
+            */
+        }
+    </script>
+</body>
+
+</html>
