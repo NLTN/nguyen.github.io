@@ -229,8 +229,8 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         if (h < k)
         {
             let p = quickSort_partition2(arr, h, k);
-            quickSort3(arr, h, p - 1);
-            quickSort3(arr, p + 1, k);
+            quickSort2(arr, h, p - 1);
+            quickSort2(arr, p + 1, k);
         }
         else if (h < arr.length)
         {
