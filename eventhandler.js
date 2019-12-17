@@ -1,3 +1,9 @@
+/*
+    Nguyen, Nguyen
+
+    December 15, 2019
+*/
+
 function EventHandler()
 {
     let handlers = [];

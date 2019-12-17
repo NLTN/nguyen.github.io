@@ -3,24 +3,43 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Array Visual</title>
+    <title>Quick Sort Visual</title>
     <style type="text/css">
         canvas {
             border: 1px solid grey;
         }
     </style>
+
+    <script src="EventHandler.js"></script>
+    <script src="Shape2D.js"></script>
+    <script src="AnimationController.js"></script>
+    <script src="QuickSortVisualizer.js"></script>
 </head>
 
 <body>
-    <button onclick="stopAnimation();">stopAnimation</button>
-    <button onclick="playStoryboard();">PlayStoryboard</button>
-    <button onclick="quickSort3(numbers, 0, numbers.length - 1);">quickSort3</button>
-    <button onclick="testController();">testController</button>
-    <canvas></canvas>
-    <script src="eventhandler.js"></script>
-    <script src="shape2D.js"></script>
-    <script src="AnimationController.js"></script>
-    <script src="quicksort3Lib.js"></script>
+    <div>
+        <button onclick="vs1.reset();">Generate Random Numbers</button>
+        <button onclick="vs1.sort();">quickSort3</button>
+        <button onclick="vs1.test(1);">test</button>
+        <button onclick="vs1.test2(1);">test</button>
+    </div>
+    <div>
+        <canvas id="canvasOne" width="700" height="150"></canvas>
+    </div>
+    <br />
+    <div>
+        <button onclick="vs2.reset();">Generate Random Numbers</button>
+        <button onclick="vs2.sort();">quickSort3</button>
+    </div>
+    <div>
+        <canvas id="canvasTwo" width="700" height="150"></canvas>
+    </div>
+
+    <!-- Initialize -->
+    <script>
+        let vs1 = new QuickSortVisualizer("canvasOne", 5);
+        let vs2 = new QuickSortVisualizer("canvasTwo", 10);
+    </script>
 
     <script>
         function testController()

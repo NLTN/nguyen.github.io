@@ -1,3 +1,9 @@
+/*
+    Nguyen, Nguyen
+
+    December 14, 2019
+*/
+
 class Shape2D
 {
     constructor(x, y, text, fillColor, borderColor, textColor)
@@ -23,7 +29,7 @@ class Shape2D
      */
     setCanvas(canvas)
     {
-        let ctx = document.querySelector(canvas).getContext('2d');
+        this.ctx = canvas;
     }
 }
 
@@ -46,21 +52,21 @@ class Rect extends Shape2D
             // Draw shape
             if (this.fillColor != null)
             {
-                ctx.fillStyle = this.fillColor;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
+                this.ctx.fillStyle = this.fillColor;
+                this.ctx.fillRect(this.x, this.y, this.width, this.height);
             }
 
             if (this.borderColor != null)
             {
-                ctx.strokeStyle = this.borderColor;
-                ctx.strokeRect(this.x, this.y, this.width, this.height);
+                this.ctx.strokeStyle = this.borderColor;
+                this.ctx.strokeRect(this.x, this.y, this.width, this.height);
             }
 
             // Draw Text
-            ctx.font = this.font;
-            ctx.fillStyle = this.textColor;
-            ctx.textAlign = this.textAlign;
-            ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height / 1.5);
+            this.ctx.font = this.font;
+            this.ctx.fillStyle = this.textColor;
+            this.ctx.textAlign = this.textAlign;
+            this.ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height / 1.5);
         }
     }
 }
@@ -81,28 +87,28 @@ class Circle extends Shape2D
         if (!this.hidden)
         {
             // Draw shape
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
             if (this.fillColor != null)
             {
-                ctx.fillStyle = this.fillColor;
-                ctx.fill();
+                this.ctx.fillStyle = this.fillColor;
+                this.ctx.fill();
             }
 
             if (this.borderColor != null)
             {
-                ctx.strokeStyle = this.borderColor;
-                ctx.stroke();
+                this.ctx.strokeStyle = this.borderColor;
+                this.ctx.stroke();
             }
 
-            
-            ctx.closePath();
+
+            this.ctx.closePath();
 
             // Draw Text
-            ctx.font = this.font;
-            ctx.fillStyle = this.textColor;
-            ctx.textAlign = this.textAlign;
-            ctx.fillText(this.text, this.x, this.y + this.radius / 2);
+            this.ctx.font = this.font;
+            this.ctx.fillStyle = this.textColor;
+            this.ctx.textAlign = this.textAlign;
+            this.ctx.fillText(this.text, this.x, this.y + this.radius / 2);
         }
     }
 }

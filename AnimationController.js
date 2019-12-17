@@ -1,13 +1,43 @@
+/*
+    Nguyen, Nguyen
+
+    December 15, 2019
+*/
+
 function AnimationController()
 {
     this.targets = [];
     let originalPoints = [];
+    let startTimes = [];
     let timer; // Interval Timer.
     let status = 0; // 0: stop, 1: running
-    let startTimes = [];
     this.onStart = new EventHandler();
     this.onStop = new EventHandler();
 
+    /**
+     * Get the status of the controller.
+     * @return {number} 1 if the controller is running, return 0 otherwise.     
+    */
+    this.getStatus = function ()
+    {
+        return status;
+    }
+
+    /**
+     * Add a linear motion to the queue
+     * @param {string} target       The object to move
+     * @param {string} motions      An array of instructions of the motion
+     * 
+     * Example: 
+     * 
+     * aniCtrl.addLinearMotion(circle, [
+     * 
+     *           { x: 300, y: 500, duration: 2000 },
+     * 
+     *           { x: 700, y: 500, duration: 2000 }
+     * 
+     *       ]);
+     */
     this.addLinearMotion = function (target, motions)
     {
         let index = this.targets.findIndex(e => e[0].id == target.id);
@@ -24,6 +54,10 @@ function AnimationController()
         }
     }
 
+    /**
+     * Calculate the position of an object.....
+     * @return {struct} A struct {x, y}
+     */
     function getLineXYatPercent(startPt, endPt, percent)
     {
         let dx = endPt.x - startPt.x;
@@ -32,14 +66,41 @@ function AnimationController()
         let Y = startPt.y + dy * percent;
         return ({ x: X, y: Y });
     }
-
+    /**
+     * Start the animation controller
+    */
     this.start = function ()
     {
         if (status == 0)
         {
+            status = 1;
             this.onStart.raiseEvent();
             timer = setInterval(() => { this.onTimedEvent(); }, 1);
         }
+    }
+
+    /**
+     * Stop the animation controller
+    */
+    this.stop = function ()
+    {
+        if (status != 0)
+        {
+            status = 0;
+            clearInterval(timer);
+        }
+    }
+
+    /**
+     * Reset the animation controller
+    */
+    this.reset = function ()
+    {
+        this.targets.length = 0;
+        originalPoints.length = 0;
+        startTimes.length = 0;
+        this.onStart = new EventHandler();
+        this.onStop = new EventHandler();
     }
 
     this.onTimedEvent = function ()
