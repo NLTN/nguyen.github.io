@@ -11,7 +11,7 @@
     </style>
 
     <script src="EventHandler.js"></script>
-    <script src="Shapes.js"></script>
+    <script src="Shape2D.js"></script>
     <script src="AnimationController.js"></script>
     <script src="QuickSortVisualizer.js"></script>
 </head>
@@ -19,7 +19,7 @@
 <body>
     <div>
         <button onclick="vs1.reset();">Generate Random Numbers</button>
-        <button onclick="vs1.sort();">quickSort3</button>
+        <button onclick="vs1.sort();">quickSort2</button>
         <button onclick="vs1.test(1);">test</button>
         <button onclick="vs1.test2(1);">test</button>
     </div>
@@ -29,16 +29,26 @@
     <br />
     <div>
         <button onclick="vs2.reset();">Generate Random Numbers</button>
-        <button onclick="vs2.sort();">quickSort3</button>
+        <button onclick="vs2.sort();">quickSort2</button>
     </div>
     <div>
         <canvas id="canvasTwo" width="700" height="150"></canvas>
     </div>
 
+    <div>
+        <button onclick="vs3.reset();">Generate Random Numbers</button>
+        <button onclick="vs3.sort();">quickSort3</button>
+    </div>
+    <div>
+        <canvas id="canvasThree" width="700" height="150"></canvas>
+    </div>
+
+
     <!-- Initialize -->
     <script>
-        let vs1 = new QuickSortVisualizer("canvasOne", 5);
-        let vs2 = new QuickSortVisualizer("canvasTwo", 10);
+        let vs1 = new QuickSortVisualizer("canvasOne", 5, 2);
+        let vs2 = new QuickSortVisualizer("canvasTwo", 10, 2);
+        let vs3 = new QuickSortVisualizer("canvasThree", 10, 3);
     </script>
 
     <script>

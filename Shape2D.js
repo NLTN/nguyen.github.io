@@ -101,7 +101,6 @@ class Circle extends Shape2D
                 this.ctx.stroke();
             }
 
-
             this.ctx.closePath();
 
             // Draw Text

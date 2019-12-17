@@ -4,7 +4,13 @@
     December 14, 2019
 */
 
-function QuickSortVisualizer(canvas, numberOfElements)
+/**
+ * Build a quick sort visualizer
+ * @param {string} canvasID             The ID of the canvas
+ * @param {string} numberOfElements     The number of elements
+ * @param {string} partitionStyle       The partitioning style. Input 2 or 3
+ */
+function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
 {
     const MARGIN_TOP = 50;
     const MARGIN_LEFT = 10;
@@ -16,6 +22,7 @@ function QuickSortVisualizer(canvas, numberOfElements)
     let elements = [];
     let steps = [];
     let speed = 0.5;
+    //let partitionStyle = partitionStyle;
 
     // Canvas's context
     let ctx = document.getElementById(canvas).getContext('2d');
@@ -69,7 +76,14 @@ function QuickSortVisualizer(canvas, numberOfElements)
     */
     this.sort = function ()
     {
-        quickSort3(numbers, 0, numbers.length - 1);
+        if (partitionStyle == 2)
+        {
+            quickSort2(numbers, 0, numbers.length - 1);
+        }
+        else
+        {
+            quickSort3(numbers, 0, numbers.length - 1);
+        }
         startAnimationRequest();
         playStoryboard();
     }
@@ -114,7 +128,8 @@ function QuickSortVisualizer(canvas, numberOfElements)
         switch (args[0])
         {
             case "move lowIndex":
-                aniCtrl.addLinearMotion(lowIndex, [{ x: elements[args[1]].x, y: lowIndex.y, duration: 150 / speed }])
+                let x = (args[1] < elements.length) ? (elements[args[1]].x) : (elements[elements.length - 1].x + CELL_WIDTH + CELL_SPACING);
+                aniCtrl.addLinearMotion(lowIndex, [{ x: x, y: lowIndex.y, duration: 150 / speed }])
 
                 lowIndex.onAnimationEnd.addHandler(() =>
                 {
@@ -209,11 +224,11 @@ function QuickSortVisualizer(canvas, numberOfElements)
         startAnimationRequest();
     }
 
-    function quickSort3(arr, h, k)
+    function quickSort2(arr, h, k)
     {
         if (h < k)
         {
-            let p = quickSort3_partition(arr, h, k);
+            let p = quickSort_partition2(arr, h, k);
             quickSort3(arr, h, p - 1);
             quickSort3(arr, p + 1, k);
         }
@@ -223,7 +238,65 @@ function QuickSortVisualizer(canvas, numberOfElements)
         }
     }
 
-    function quickSort3_partition(arr, startIndex, endIndex)
+    function quickSort3(arr, h, k)
+    {
+        if (h < k)
+        {
+            let p = quickSort_partition3(arr, h, k);
+            quickSort3(arr, h, p - 1);
+            quickSort3(arr, p + 1, k);
+        }
+        else if (h < arr.length)
+        {
+            steps.push(['setColor', h, '#E64A19']);
+        }
+    }
+
+    function quickSort_partition2(arr, startIndex, endIndex)
+    {
+        let pivot = arr[startIndex];
+        let h = startIndex + 1;
+        let k = endIndex;
+
+        steps.push(["pivot", startIndex]);
+        steps.push(["setColor", startIndex, '#0F0F0F']);
+        steps.push(["hide pivot", false]);
+        steps.push(["move lowIndex", h]);
+        steps.push(["move highIndex", k]);
+
+        while (h <= k)
+        {
+            while (h <= k && arr[h] <= pivot)
+            {
+                ++h;
+                steps.push(["move lowIndex", h]);
+            }
+
+            while (h <= k && arr[k] > pivot)
+            {
+                --k;
+                steps.push(["move highIndex", k]);
+            }
+
+            if (h < k)
+            {
+                steps.push(["swap", h, k]);
+                [arr[h], arr[k]] = [arr[k], arr[h]];
+            }
+        }
+
+        if (k != startIndex)
+        {
+            steps.push(["hide pivot", true]);
+            steps.push(["swap", startIndex, k]);
+            [arr[startIndex], arr[k]] = [arr[k], arr[startIndex]];
+            steps.push(["setColor", k, '#E64A19']);
+        }
+
+        return k;
+    }
+
+    function quickSort_partition3(arr, startIndex, endIndex)
     {
         let pivot = arr[startIndex];
         let h = startIndex;
