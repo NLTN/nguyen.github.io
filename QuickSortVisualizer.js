@@ -18,7 +18,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     const CELL_WIDTH = 50;
     const CELL_HEIGHT = 30;
     const CELL_SPACING = 5;
-    
+
     /***** Private member variables *****/
     let numbers = []
     let elements = [];
@@ -72,6 +72,22 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         console.log("function test2() -> " + "steps.length = " + animationScript.length + ", aniReq" + currentAnimationFrame);
     }
 
+    this.createNumbersFromString = function (s)
+    {
+        this.clear();
+        let arr = [];
+        let temp = s.replace(/\s/g, '').split(',', 15);
+        temp.forEach(e =>
+        {
+            if (!isNaN(e))
+            {
+                arr.push(parseInt(e));
+            }
+        });
+        createNumbers(arr);
+        startAnimationRequest();
+    }
+
     /**
     * Perform sorting
     */
@@ -89,10 +105,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         playNextScene();
     }
 
-    /**
-    * Reset everything
-    */
-    this.reset = function () 
+    this.clear = function ()
     {
         // Stop and reset AnimationController
         animCtrl.stop();
@@ -107,9 +120,52 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         numbers.length = 0;
         elements.length = 0;
         animationScript.length = 0;
+    }
+
+    /**
+    * Reset everything
+    */
+    this.reset = function () 
+    {
+        this.clear();
+
+        if (numbers.length == 0)
+        {
+            generateRadomNumbers();
+        }
 
         // Re-init
         init(numberOfElements);
+    }
+
+    /****************************************/
+    /*               Helpers                */
+    /****************************************/
+    let createNumbers = function (arr)
+    {
+        let numOfElems = arr.length;
+
+        for (let i = 0; i < numOfElems; ++i)
+        {
+            numbers.push(arr[i]);
+
+            let s = new Rect(MARGIN_LEFT + (CELL_WIDTH * i) + (CELL_SPACING * i), MARGIN_TOP, CELL_WIDTH, CELL_HEIGHT, arr[i], '#00796B', '5D4037', 'white');
+            s.onAnimationEnd = new EventHandler();
+            s.setCanvas(ctx);
+
+            elements.push(s);
+        }
+    }
+
+    let generateRadomNumbers = function (n)
+    {
+        let arr = [];
+        for (let i = 0; i < n; ++i)
+        {
+            arr.push(Math.floor(Math.random() * 100) + 1);
+        }
+
+        createNumbers(arr);
     }
 
     /****************************************/
@@ -127,28 +183,22 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     let play = function (args)
     {
         switch (args[0])
-        {
-            case "move lowIndex":
-                let x = (args[1] < elements.length) ? (elements[args[1]].x) : (elements[elements.length - 1].x + CELL_WIDTH + CELL_SPACING);
-                animCtrl.addLinearMotion(lowIndex, [{ x: x, y: lowIndex.y, duration: 150 / speedRatio }])
+        {            
+            case "moveIndices":
+                let x = (args[2] < elements.length) ? (elements[args[2]].x) : (elements[elements.length - 1].x + CELL_WIDTH + CELL_SPACING);
+                animCtrl.addLinearMotion(args[1], [{ x: x, y: args[1].y, duration: 150 / speedRatio }])
 
-                lowIndex.onAnimationEnd.addHandler(() =>
+                args[1].onAnimationEnd.addHandler(() =>
                 {
-                    lowIndex.onAnimationEnd.removeAllHandlers();
+                    args[1].onAnimationEnd.removeAllHandlers();
                     setTimeout(() => { playNextScene(); }, 100 / speedRatio);
                 });
                 animCtrl.start();
                 break;
 
-            case "move highIndex":
-                animCtrl.addLinearMotion(highIndex, [{ x: elements[args[1]].x, y: highIndex.y, duration: 150 / speedRatio }])
-
-                highIndex.onAnimationEnd.addHandler(() =>
-                {
-                    highIndex.onAnimationEnd.removeAllHandlers();
-                    setTimeout(() => { playNextScene(); }, 100 / speedRatio);
-                });
-                animCtrl.start();
+            case "changeIndex":
+                args[1].x = elements[args[2]].x;
+                setTimeout(() => { playNextScene(); }, 10 / speedRatio);
                 break;
 
             case "swap":
@@ -184,7 +234,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
                 setTimeout(function () { playNextScene(); }, 100 / speedRatio);
                 break;
 
-            case "pivot":
+            case "movePivot":
                 let newX = elements[args[1]].x + (elements[args[1]].width - pivotIndicator.width) / 2;
                 animCtrl.addLinearMotion(pivotIndicator, [{ x: newX, y: pivotIndicator.y, duration: 100 / speedRatio }])
                 pivotIndicator.onAnimationEnd.addHandler(function () 
@@ -195,11 +245,14 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
                 animCtrl.start();
                 break;
 
-            case "hide pivot":
-                pivotIndicator.hidden = args[1];
+            case "setHidden":
+                args[1].forEach(e => { e.target.hidden = e.value });
                 setTimeout(function () { playNextScene(); }, 80 / speedRatio);
                 break;
 
+            case "delay":
+                setTimeout(function () { playNextScene(); }, args[1] / speedRatio);
+                break;
             default:
                 break;
         }
@@ -210,17 +263,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     /****************************************/
     function init(numberOfElements)
     {
-        for (let i = 0; i < numberOfElements; ++i)
-        {
-            let num = Math.floor(Math.random() * 100) + 1;
-            numbers.push(num);
-
-            let s = new Rect(MARGIN_LEFT + (CELL_WIDTH * i) + (CELL_SPACING * i), MARGIN_TOP, CELL_WIDTH, CELL_HEIGHT, num, '#00796B', '5D4037', 'white');
-            s.onAnimationEnd = new EventHandler();
-            s.setCanvas(ctx);
-
-            elements.push(s);
-        }
+        generateRadomNumbers(numberOfElements);
 
         startAnimationRequest();
     }
@@ -259,24 +302,30 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         let h = startIndex + 1;
         let k = endIndex;
 
-        animationScript.push(["pivot", startIndex]);
+        animationScript.push(["movePivot", startIndex]);
         animationScript.push(["setColor", startIndex, '#0F0F0F']);
-        animationScript.push(["hide pivot", false]);
-        animationScript.push(["move lowIndex", h]);
-        animationScript.push(["move highIndex", k]);
+        animationScript.push(["changeIndex", lowIndex, h]);
+        animationScript.push(["changeIndex", highIndex, k]);
+        animationScript.push(["setHidden", [
+            { target: pivotIndicator, value: false },
+            { target: lowIndex, value: false },
+            { target: highIndex, value: false },
+        ]]);
+
+        animationScript.push(["delay", 80]);
 
         while (h <= k)
         {
             while (h <= k && arr[h] <= pivot)
             {
                 ++h;
-                animationScript.push(["move lowIndex", h]);
+                animationScript.push(["moveIndices", lowIndex, h]);
             }
 
             while (h <= k && arr[k] > pivot)
             {
                 --k;
-                animationScript.push(["move highIndex", k]);
+                animationScript.push(["moveIndices", highIndex, k]);
             }
 
             if (h < k)
@@ -288,8 +337,15 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
 
         if (k != startIndex)
         {
-            animationScript.push(["hide pivot", true]);
+            animationScript.push(["setHidden", [
+                { target: pivotIndicator, value: true },
+            ]]);
             animationScript.push(["swap", startIndex, k]);
+            animationScript.push(["setHidden", [
+                { target: lowIndex, value: true },
+                { target: highIndex, value: true },
+            ]]);
+
             [arr[startIndex], arr[k]] = [arr[k], arr[startIndex]];
             animationScript.push(["setColor", k, '#E64A19']);
         }
@@ -303,20 +359,26 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         let h = startIndex;
         let k = startIndex + 1;
 
-        animationScript.push(["pivot", startIndex]);
+        animationScript.push(["movePivot", startIndex]);
         animationScript.push(["setColor", startIndex, '#0F0F0F']);
-        animationScript.push(["hide pivot", false]);
-        animationScript.push(["move lowIndex", h]);
-        animationScript.push(["move highIndex", k]);
+        animationScript.push(["changeIndex", lowIndex, h]);
+        animationScript.push(["changeIndex", highIndex, k]);
+        animationScript.push(["setHidden", [
+            { target: pivotIndicator, value: false },
+            { target: lowIndex, value: false },
+            { target: highIndex, value: false },
+        ]]);
+
+        animationScript.push(["delay", 80]);
 
         for (k; k <= endIndex; ++k)
         {
-            animationScript.push(["move highIndex", k]);
+            animationScript.push(["moveIndices", highIndex, k]);
 
             if (arr[k] <= pivot)
             {
                 ++h;
-                animationScript.push(["move lowIndex", h]);
+                animationScript.push(["moveIndices", lowIndex, h]);
                 if (h != k)
                 {
                     animationScript.push(["swap", h, k]);
@@ -328,8 +390,15 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
 
         if (h != startIndex)
         {
-            animationScript.push(["hide pivot", true]);
+            animationScript.push(["setHidden", [
+                { target: pivotIndicator, value: true },
+            ]]);
             animationScript.push(["swap", startIndex, h]);
+            animationScript.push(["setHidden", [
+                { target: lowIndex, value: true },
+                { target: highIndex, value: true },
+            ]]);
+
             [arr[startIndex], arr[h]] = [arr[h], arr[startIndex]];
             animationScript.push(["setColor", h, '#E64A19']);
         }
