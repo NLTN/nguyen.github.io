@@ -12,17 +12,18 @@
  */
 function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
 {
+    /***** Private Constants for the Layout *****/
     const MARGIN_TOP = 50;
     const MARGIN_LEFT = 10;
     const CELL_WIDTH = 50;
     const CELL_HEIGHT = 30;
     const CELL_SPACING = 5;
-
+    
+    /***** Private member variables *****/
     let numbers = []
     let elements = [];
-    let steps = [];
-    let speed = 0.5;
-    //let partitionStyle = partitionStyle;
+    let animationScript = [];
+    let speedRatio = 0.5;
 
     // Canvas's context
     let ctx = document.getElementById(canvas).getContext('2d');
@@ -32,8 +33,8 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     let lastAnimationFrame = 0;
 
     // Animation Controller
-    let aniCtrl = new AnimationController();
-    aniCtrl.onStart.addHandler(() => { startAnimationRequest() });
+    let animCtrl = new AnimationController();
+    animCtrl.onStart.addHandler(() => { startAnimationRequest() });
     //aniCtrl.onStop.addHandler(() => { });
 
     let pivotIndicator = new Rect(-30, MARGIN_TOP - 12, 20, 10, "pivot");
@@ -55,20 +56,20 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     highIndex.setCanvas(ctx);
 
     /****************************************/
-    /*          Interface Methods           */
+    /*              Interface               */
     /****************************************/
     this.test = function (args)
     {
         console.log('test function called');
-        aniCtrl.addLinearMotion(elements[0], [
+        animCtrl.addLinearMotion(elements[0], [
             { x: 300, y: 500, duration: 2000 }
         ]);
-        aniCtrl.start();
+        animCtrl.start();
     }
 
     this.test2 = function (args)
     {
-        console.log("function test2() -> " + "steps.length = " + steps.length + ", aniReq" + currentAnimationFrame);
+        console.log("function test2() -> " + "steps.length = " + animationScript.length + ", aniReq" + currentAnimationFrame);
     }
 
     /**
@@ -85,7 +86,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
             quickSort3(numbers, 0, numbers.length - 1);
         }
         startAnimationRequest();
-        playStoryboard();
+        playNextScene();
     }
 
     /**
@@ -94,8 +95,8 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     this.reset = function () 
     {
         // Stop and reset AnimationController
-        aniCtrl.stop();
-        aniCtrl.reset();
+        animCtrl.stop();
+        animCtrl.reset();
 
         // Hid the indicators
         pivotIndicator.x = -100;
@@ -105,7 +106,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         // Empty the arrays
         numbers.length = 0;
         elements.length = 0;
-        steps.length = 0;
+        animationScript.length = 0;
 
         // Re-init
         init(numberOfElements);
@@ -114,12 +115,12 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     /****************************************/
     /*             StoryBoard               */
     /****************************************/
-    let playStoryboard = function ()
+    let playNextScene = function ()
     {
-        if (steps.length > 0)
+        if (animationScript.length > 0)
         {
-            play(steps[0]);
-            steps.shift();
+            play(animationScript[0]);
+            animationScript.shift();
         }
     }
 
@@ -129,25 +130,25 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         {
             case "move lowIndex":
                 let x = (args[1] < elements.length) ? (elements[args[1]].x) : (elements[elements.length - 1].x + CELL_WIDTH + CELL_SPACING);
-                aniCtrl.addLinearMotion(lowIndex, [{ x: x, y: lowIndex.y, duration: 150 / speed }])
+                animCtrl.addLinearMotion(lowIndex, [{ x: x, y: lowIndex.y, duration: 150 / speedRatio }])
 
                 lowIndex.onAnimationEnd.addHandler(() =>
                 {
                     lowIndex.onAnimationEnd.removeAllHandlers();
-                    setTimeout(() => { playStoryboard(); }, 100 / speed);
+                    setTimeout(() => { playNextScene(); }, 100 / speedRatio);
                 });
-                aniCtrl.start();
+                animCtrl.start();
                 break;
 
             case "move highIndex":
-                aniCtrl.addLinearMotion(highIndex, [{ x: elements[args[1]].x, y: highIndex.y, duration: 150 / speed }])
+                animCtrl.addLinearMotion(highIndex, [{ x: elements[args[1]].x, y: highIndex.y, duration: 150 / speedRatio }])
 
                 highIndex.onAnimationEnd.addHandler(() =>
                 {
                     highIndex.onAnimationEnd.removeAllHandlers();
-                    setTimeout(() => { playStoryboard(); }, 100 / speed);
+                    setTimeout(() => { playNextScene(); }, 100 / speedRatio);
                 });
-                aniCtrl.start();
+                animCtrl.start();
                 break;
 
             case "swap":
@@ -158,45 +159,45 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
                 let y2 = elements[args[2]].y;
 
                 // Move both shapes down
-                aniCtrl.addLinearMotion(elements[args[1]], [{ x: x1, y: y1 + 50, duration: 400 / speed }]);
-                aniCtrl.addLinearMotion(elements[args[2]], [{ x: x2, y: y2 + 50, duration: 400 / speed }]);
+                animCtrl.addLinearMotion(elements[args[1]], [{ x: x1, y: y1 + 50, duration: 400 / speedRatio }]);
+                animCtrl.addLinearMotion(elements[args[2]], [{ x: x2, y: y2 + 50, duration: 400 / speedRatio }]);
 
                 // Move both shape left/right
-                aniCtrl.addLinearMotion(elements[args[1]], [{ x: x2, y: y1 + 50, duration: 200 / speed }]);
-                aniCtrl.addLinearMotion(elements[args[2]], [{ x: x1, y: y2 + 50, duration: 200 / speed }]);
+                animCtrl.addLinearMotion(elements[args[1]], [{ x: x2, y: y1 + 50, duration: 200 / speedRatio }]);
+                animCtrl.addLinearMotion(elements[args[2]], [{ x: x1, y: y2 + 50, duration: 200 / speedRatio }]);
 
                 // Move both shape up
-                aniCtrl.addLinearMotion(elements[args[1]], [{ x: x2, y: y2, duration: 400 / speed }]);
-                aniCtrl.addLinearMotion(elements[args[2]], [{ x: x1, y: y1, duration: 400 / speed }]);
+                animCtrl.addLinearMotion(elements[args[1]], [{ x: x2, y: y2, duration: 400 / speedRatio }]);
+                animCtrl.addLinearMotion(elements[args[2]], [{ x: x1, y: y1, duration: 400 / speedRatio }]);
 
                 elements[args[2]].onAnimationEnd.addHandler(function () 
                 {
                     elements[args[2]].onAnimationEnd.removeAllHandlers();
                     [elements[args[1]], elements[args[2]]] = [elements[args[2]], elements[args[1]]];
-                    playStoryboard();
+                    playNextScene();
                 });
-                aniCtrl.start();
+                animCtrl.start();
                 break;
 
             case "setColor":
                 elements[args[1]].fillColor = args[2];
-                setTimeout(function () { playStoryboard(); }, 100 / speed);
+                setTimeout(function () { playNextScene(); }, 100 / speedRatio);
                 break;
 
             case "pivot":
                 let newX = elements[args[1]].x + (elements[args[1]].width - pivotIndicator.width) / 2;
-                aniCtrl.addLinearMotion(pivotIndicator, [{ x: newX, y: pivotIndicator.y, duration: 100 / speed }])
+                animCtrl.addLinearMotion(pivotIndicator, [{ x: newX, y: pivotIndicator.y, duration: 100 / speedRatio }])
                 pivotIndicator.onAnimationEnd.addHandler(function () 
                 {
                     pivotIndicator.onAnimationEnd.removeAllHandlers();
-                    playStoryboard();
+                    playNextScene();
                 });
-                aniCtrl.start();
+                animCtrl.start();
                 break;
 
             case "hide pivot":
                 pivotIndicator.hidden = args[1];
-                setTimeout(function () { playStoryboard(); }, 80 / speed);
+                setTimeout(function () { playNextScene(); }, 80 / speedRatio);
                 break;
 
             default:
@@ -234,7 +235,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         }
         else if (h < arr.length)
         {
-            steps.push(['setColor', h, '#E64A19']);
+            animationScript.push(['setColor', h, '#E64A19']);
         }
     }
 
@@ -248,7 +249,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         }
         else if (h < arr.length)
         {
-            steps.push(['setColor', h, '#E64A19']);
+            animationScript.push(['setColor', h, '#E64A19']);
         }
     }
 
@@ -258,39 +259,39 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         let h = startIndex + 1;
         let k = endIndex;
 
-        steps.push(["pivot", startIndex]);
-        steps.push(["setColor", startIndex, '#0F0F0F']);
-        steps.push(["hide pivot", false]);
-        steps.push(["move lowIndex", h]);
-        steps.push(["move highIndex", k]);
+        animationScript.push(["pivot", startIndex]);
+        animationScript.push(["setColor", startIndex, '#0F0F0F']);
+        animationScript.push(["hide pivot", false]);
+        animationScript.push(["move lowIndex", h]);
+        animationScript.push(["move highIndex", k]);
 
         while (h <= k)
         {
             while (h <= k && arr[h] <= pivot)
             {
                 ++h;
-                steps.push(["move lowIndex", h]);
+                animationScript.push(["move lowIndex", h]);
             }
 
             while (h <= k && arr[k] > pivot)
             {
                 --k;
-                steps.push(["move highIndex", k]);
+                animationScript.push(["move highIndex", k]);
             }
 
             if (h < k)
             {
-                steps.push(["swap", h, k]);
+                animationScript.push(["swap", h, k]);
                 [arr[h], arr[k]] = [arr[k], arr[h]];
             }
         }
 
         if (k != startIndex)
         {
-            steps.push(["hide pivot", true]);
-            steps.push(["swap", startIndex, k]);
+            animationScript.push(["hide pivot", true]);
+            animationScript.push(["swap", startIndex, k]);
             [arr[startIndex], arr[k]] = [arr[k], arr[startIndex]];
-            steps.push(["setColor", k, '#E64A19']);
+            animationScript.push(["setColor", k, '#E64A19']);
         }
 
         return k;
@@ -302,23 +303,23 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
         let h = startIndex;
         let k = startIndex + 1;
 
-        steps.push(["pivot", startIndex]);
-        steps.push(["setColor", startIndex, '#0F0F0F']);
-        steps.push(["hide pivot", false]);
-        steps.push(["move lowIndex", h]);
-        steps.push(["move highIndex", k]);
+        animationScript.push(["pivot", startIndex]);
+        animationScript.push(["setColor", startIndex, '#0F0F0F']);
+        animationScript.push(["hide pivot", false]);
+        animationScript.push(["move lowIndex", h]);
+        animationScript.push(["move highIndex", k]);
 
         for (k; k <= endIndex; ++k)
         {
-            steps.push(["move highIndex", k]);
+            animationScript.push(["move highIndex", k]);
 
             if (arr[k] <= pivot)
             {
                 ++h;
-                steps.push(["move lowIndex", h]);
+                animationScript.push(["move lowIndex", h]);
                 if (h != k)
                 {
-                    steps.push(["swap", h, k]);
+                    animationScript.push(["swap", h, k]);
 
                     [arr[h], arr[k]] = [arr[k], arr[h]];
                 }
@@ -327,10 +328,10 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
 
         if (h != startIndex)
         {
-            steps.push(["hide pivot", true]);
-            steps.push(["swap", startIndex, h]);
+            animationScript.push(["hide pivot", true]);
+            animationScript.push(["swap", startIndex, h]);
             [arr[startIndex], arr[h]] = [arr[h], arr[startIndex]];
-            steps.push(["setColor", h, '#E64A19']);
+            animationScript.push(["setColor", h, '#E64A19']);
         }
 
         return h;
@@ -339,7 +340,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     /****************************************/
     /*          Animation Frame             */
     /****************************************/
-    let animate = function ()
+    function animate()
     {
         lastAnimationFrame = currentAnimationFrame;
         currentAnimationFrame = requestAnimationFrame(animate);
@@ -368,7 +369,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     // Auto stop the animationRequest
     setInterval(() => 
     {
-        if (steps.length == 0 && aniCtrl.getStatus() == 0)
+        if (animationScript.length == 0 && animCtrl.getStatus() == 0)
         {
             stopAnimation();
         }
