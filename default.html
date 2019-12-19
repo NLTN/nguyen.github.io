@@ -3,13 +3,38 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quick Sort Visual</title>
     <style type="text/css">
-        canvas {
+        .left,
+        .right {
+            float: left;
+            width: 20%;
+            /* The width is 20%, by default */
+        }
+
+        .main {
+            float: left;
+            width: 60%;
+            /* The width is 60%, by default */
+        }
+
+        /* Use a media query to add a breakpoint at 800px: */
+        @media screen and (max-width: 800px) {
+
+            .left,
+            .main,
+            .right {
+                width: 100%;
+                /* The width is 100%, when the viewport is 800px or smaller */
+            }
+        }
+
+        canvas {            
             border: 1px solid grey;
         }
     </style>
-    
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-24490275-6"></script>
     <script>
@@ -36,7 +61,7 @@
         <button onclick="vs1.test2(1);">test</button>
     </div>
     <div>
-        <canvas id="canvasOne" width="700" height="150"></canvas>
+        <canvas id="canvasOne" height="150"></canvas>
     </div>
     <br />
     <div>
@@ -44,7 +69,7 @@
         <button onclick="vs2.sort();">quickSort2</button>
     </div>
     <div>
-        <canvas id="canvasTwo" width="700" height="150"></canvas>
+        <canvas id="canvasTwo" height="150"></canvas>
     </div>
 
     <div>
@@ -52,7 +77,7 @@
         <button onclick="vs3.sort();">quickSort3</button>
     </div>
     <div>
-        <canvas id="canvasThree" width="700" height="150"></canvas>
+        <canvas id="canvasThree" height="150"></canvas>
     </div>
 
 

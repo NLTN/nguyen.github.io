@@ -10,7 +10,7 @@
  * @param {string} numberOfElements     The number of elements
  * @param {string} partitionStyle       The partitioning style. Input 2 or 3
  */
-function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
+function QuickSortVisualizer(canvasID, numberOfElements, partitionStyle)
 {
     /***** Private Constants for the Layout *****/
     const MARGIN_TOP = 50;
@@ -26,7 +26,17 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     let speedRatio = 0.5;
 
     // Canvas's context
-    let ctx = document.getElementById(canvas).getContext('2d');
+    let canvas = document.getElementById(canvasID);
+    let ctx;
+    if (canvas)
+    {
+        ctx = document.getElementById(canvasID).getContext('2d');
+    }
+    else
+    {
+        console.log(`Canvas ${canvasID} not found.`)
+        return;
+    }
 
     // Animation Frame
     let currentAnimationFrame = 0;
@@ -183,7 +193,7 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     let play = function (args)
     {
         switch (args[0])
-        {            
+        {
             case "moveIndices":
                 let x = (args[2] < elements.length) ? (elements[args[2]].x) : (elements[elements.length - 1].x + CELL_WIDTH + CELL_SPACING);
                 animCtrl.addLinearMotion(args[1], [{ x: x, y: args[1].y, duration: 150 / speedRatio }])
@@ -263,8 +273,18 @@ function QuickSortVisualizer(canvas, numberOfElements, partitionStyle)
     /****************************************/
     function init(numberOfElements)
     {
+        window.addEventListener('resize', resizeCanvas, false);
+        window.addEventListener('orientationchange', resizeCanvas, false);
+        resizeCanvas();
+
         generateRadomNumbers(numberOfElements);
 
+        startAnimationRequest();
+    }
+
+    function resizeCanvas()
+    {
+        canvas.width = window.innerWidth * 0.99;
         startAnimationRequest();
     }
 
