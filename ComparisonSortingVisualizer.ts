@@ -146,10 +146,17 @@ class ComparisonSortingVisualizer
     */
     sort()
     {
+        // Dis-color
+        this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#00796B']);
+
         switch (this.algorithm)
         {
             case 'BubbleSort':
                 this.bubbleSort(this.numbers);
+                break;
+
+            case 'BubbleSortFlag':
+                this.bubbleSortFlag(this.numbers);
                 break;
 
             case 'QuickSort2':
@@ -280,11 +287,16 @@ class ComparisonSortingVisualizer
                 this.animCtrl.start();
                 break;
 
-            case "setColor":
+            case "setFillColor":
                 this.elements[args[1]].fillColor = args[2];
                 setTimeout(() => { this.playNextScene(); }, 100 / this.speedRatio);
                 break;
 
+            case "setFillColorForMultipleObjects":
+                args[1].forEach(e => { e.fillColor = args[2] })
+                //this.elements[args[1]].fillColor = args[2];
+                setTimeout(() => { this.playNextScene(); }, 100 / this.speedRatio);
+                break;
             case "movePivot":
                 let newX = this.elements[args[1]].x + (this.elements[args[1]].width - this.pivotIndicator.width) / 2;
                 this.animCtrl.addLinearMotion(this.pivotIndicator, [{ x: newX, y: this.pivotIndicator.y, duration: 100 / this.speedRatio }])
@@ -316,6 +328,7 @@ class ComparisonSortingVisualizer
     bubbleSort(arr: any[])
     {
         let n = arr.length;
+
         for (let i = 0; i < n - 1; ++i)
         {
             this.animationScript.push(["moveIndices", this.lowIndex, i]);
@@ -328,10 +341,76 @@ class ComparisonSortingVisualizer
                     [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                 }
             }
-            this.animationScript.push(['setColor', j, '#E64A19']);
+
+            this.animationScript.push(['setFillColor', j, '#E64A19']);
         }
-        this.animationScript.push(['setColor', 0, '#E64A19']);
+
+        this.animationScript.push(['setFillColor', 0, '#E64A19']);
     }
+
+    bubbleSortFlag(arr: any[])
+    {
+        let i = arr.length - 1;
+        let j = 0;
+        let n = arr.length;
+        let done = false;
+
+        while (!done)
+        {
+            done = true;
+            this.animationScript.push(["moveIndices", this.lowIndex, i]);
+
+            for (j = 0; j < i; ++j)
+            {
+                this.animationScript.push(["moveIndices", this.highIndex, j]);
+
+                if (arr[j] > arr[j + 1])
+                {
+                    this.animationScript.push(["swap", j, j + 1]);
+                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                    done = false;
+                }
+            }
+
+            this.animationScript.push(['setFillColor', j, '#E64A19']);
+            --i;
+        }
+
+        this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#E64A19']);
+    }
+
+    /*
+    bubbleSortFlag(arr: any[])
+    {
+        let i = 0;
+        let j = 0;
+        let n = arr.length;
+        let swapDone = true;
+
+        while (i < n - 1 && swapDone)
+        {
+            swapDone = false;
+            this.animationScript.push(["moveIndices", this.lowIndex, i]);
+
+            for (j = 0; j < n - i - 1; ++j)
+            {
+                this.animationScript.push(["moveIndices", this.highIndex, j]);
+
+                if (arr[j] > arr[j + 1])
+                {
+                    this.animationScript.push(["swap", j, j + 1]);
+                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                    swapDone = true;
+                }
+            }
+
+            this.animationScript.push(['setFillColor', j, '#E64A19']);
+            ++i;
+        }
+
+        this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#E64A19']);
+    }
+    */
 
     quickSort2(arr: any, h: number, k: number)
     {
@@ -343,7 +422,7 @@ class ComparisonSortingVisualizer
         }
         else if (h < arr.length)
         {
-            this.animationScript.push(['setColor', h, '#E64A19']);
+            this.animationScript.push(['setFillColor', h, '#E64A19']);
         }
     }
 
@@ -357,7 +436,7 @@ class ComparisonSortingVisualizer
         }
         else if (h < arr.length)
         {
-            this.animationScript.push(['setColor', h, '#E64A19']);
+            this.animationScript.push(['setFillColor', h, '#E64A19']);
         }
     }
 
@@ -368,7 +447,7 @@ class ComparisonSortingVisualizer
         let k = endIndex;
 
         this.animationScript.push(["movePivot", startIndex]);
-        this.animationScript.push(["setColor", startIndex, '#0F0F0F']);
+        this.animationScript.push(["setFillColor", startIndex, '#0F0F0F']);
         this.animationScript.push(["changeIndex", this.lowIndex, h]);
         this.animationScript.push(["changeIndex", this.highIndex, k]);
         this.animationScript.push(["setHidden", [
@@ -412,7 +491,7 @@ class ComparisonSortingVisualizer
             ]]);
 
             [arr[startIndex], arr[k]] = [arr[k], arr[startIndex]];
-            this.animationScript.push(["setColor", k, '#E64A19']);
+            this.animationScript.push(["setFillColor", k, '#E64A19']);
         }
 
         return k;
@@ -425,7 +504,7 @@ class ComparisonSortingVisualizer
         let k = startIndex + 1;
 
         this.animationScript.push(["movePivot", startIndex]);
-        this.animationScript.push(["setColor", startIndex, '#0F0F0F']);
+        this.animationScript.push(["setFillColor", startIndex, '#0F0F0F']);
         this.animationScript.push(["changeIndex", this.lowIndex, h]);
         this.animationScript.push(["changeIndex", this.highIndex, k]);
         this.animationScript.push(["setHidden", [
@@ -465,7 +544,7 @@ class ComparisonSortingVisualizer
             ]]);
 
             [arr[startIndex], arr[h]] = [arr[h], arr[startIndex]];
-            this.animationScript.push(["setColor", h, '#E64A19']);
+            this.animationScript.push(["setFillColor", h, '#E64A19']);
         }
 
         return h;

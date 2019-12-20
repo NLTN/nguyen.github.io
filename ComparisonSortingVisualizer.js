@@ -107,9 +107,14 @@ class ComparisonSortingVisualizer {
     * Perform sorting
     */
     sort() {
+        // Dis-color
+        this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#00796B']);
         switch (this.algorithm) {
             case 'BubbleSort':
                 this.bubbleSort(this.numbers);
+                break;
+            case 'BubbleSortFlag':
+                this.bubbleSortFlag(this.numbers);
                 break;
             case 'QuickSort2':
                 this.quickSort2(this.numbers, 0, this.numbers.length - 1);
@@ -203,8 +208,13 @@ class ComparisonSortingVisualizer {
                 });
                 this.animCtrl.start();
                 break;
-            case "setColor":
+            case "setFillColor":
                 this.elements[args[1]].fillColor = args[2];
+                setTimeout(() => { this.playNextScene(); }, 100 / this.speedRatio);
+                break;
+            case "setFillColorForMultipleObjects":
+                args[1].forEach(e => { e.fillColor = args[2]; });
+                //this.elements[args[1]].fillColor = args[2];
                 setTimeout(() => { this.playNextScene(); }, 100 / this.speedRatio);
                 break;
             case "movePivot":
@@ -242,10 +252,63 @@ class ComparisonSortingVisualizer {
                     [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                 }
             }
-            this.animationScript.push(['setColor', j, '#E64A19']);
+            this.animationScript.push(['setFillColor', j, '#E64A19']);
         }
-        this.animationScript.push(['setColor', 0, '#E64A19']);
+        this.animationScript.push(['setFillColor', 0, '#E64A19']);
     }
+    bubbleSortFlag(arr) {
+        let i = arr.length - 1;
+        let j = 0;
+        let n = arr.length;
+        let done = false;
+        while (!done) {
+            done = true;
+            this.animationScript.push(["moveIndices", this.lowIndex, i]);
+            for (j = 0; j < i; ++j) {
+                this.animationScript.push(["moveIndices", this.highIndex, j]);
+                if (arr[j] > arr[j + 1]) {
+                    this.animationScript.push(["swap", j, j + 1]);
+                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                    done = false;
+                }
+            }
+            this.animationScript.push(['setFillColor', j, '#E64A19']);
+            --i;
+        }
+        this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#E64A19']);
+    }
+    /*
+    bubbleSortFlag(arr: any[])
+    {
+        let i = 0;
+        let j = 0;
+        let n = arr.length;
+        let swapDone = true;
+
+        while (i < n - 1 && swapDone)
+        {
+            swapDone = false;
+            this.animationScript.push(["moveIndices", this.lowIndex, i]);
+
+            for (j = 0; j < n - i - 1; ++j)
+            {
+                this.animationScript.push(["moveIndices", this.highIndex, j]);
+
+                if (arr[j] > arr[j + 1])
+                {
+                    this.animationScript.push(["swap", j, j + 1]);
+                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                    swapDone = true;
+                }
+            }
+
+            this.animationScript.push(['setFillColor', j, '#E64A19']);
+            ++i;
+        }
+
+        this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#E64A19']);
+    }
+    */
     quickSort2(arr, h, k) {
         if (h < k) {
             let p = this.quickSort_partition2(arr, h, k);
@@ -253,7 +316,7 @@ class ComparisonSortingVisualizer {
             this.quickSort2(arr, p + 1, k);
         }
         else if (h < arr.length) {
-            this.animationScript.push(['setColor', h, '#E64A19']);
+            this.animationScript.push(['setFillColor', h, '#E64A19']);
         }
     }
     quickSort3(arr, h, k) {
@@ -263,7 +326,7 @@ class ComparisonSortingVisualizer {
             this.quickSort3(arr, p + 1, k);
         }
         else if (h < arr.length) {
-            this.animationScript.push(['setColor', h, '#E64A19']);
+            this.animationScript.push(['setFillColor', h, '#E64A19']);
         }
     }
     quickSort_partition2(arr, startIndex, endIndex) {
@@ -271,7 +334,7 @@ class ComparisonSortingVisualizer {
         let h = startIndex + 1;
         let k = endIndex;
         this.animationScript.push(["movePivot", startIndex]);
-        this.animationScript.push(["setColor", startIndex, '#0F0F0F']);
+        this.animationScript.push(["setFillColor", startIndex, '#0F0F0F']);
         this.animationScript.push(["changeIndex", this.lowIndex, h]);
         this.animationScript.push(["changeIndex", this.highIndex, k]);
         this.animationScript.push(["setHidden", [
@@ -304,7 +367,7 @@ class ComparisonSortingVisualizer {
                     { target: this.highIndex, value: true },
                 ]]);
             [arr[startIndex], arr[k]] = [arr[k], arr[startIndex]];
-            this.animationScript.push(["setColor", k, '#E64A19']);
+            this.animationScript.push(["setFillColor", k, '#E64A19']);
         }
         return k;
     }
@@ -313,7 +376,7 @@ class ComparisonSortingVisualizer {
         let h = startIndex;
         let k = startIndex + 1;
         this.animationScript.push(["movePivot", startIndex]);
-        this.animationScript.push(["setColor", startIndex, '#0F0F0F']);
+        this.animationScript.push(["setFillColor", startIndex, '#0F0F0F']);
         this.animationScript.push(["changeIndex", this.lowIndex, h]);
         this.animationScript.push(["changeIndex", this.highIndex, k]);
         this.animationScript.push(["setHidden", [
@@ -343,7 +406,7 @@ class ComparisonSortingVisualizer {
                     { target: this.highIndex, value: true },
                 ]]);
             [arr[startIndex], arr[h]] = [arr[h], arr[startIndex]];
-            this.animationScript.push(["setColor", h, '#E64A19']);
+            this.animationScript.push(["setFillColor", h, '#E64A19']);
         }
         return h;
     }

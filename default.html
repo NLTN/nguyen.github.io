@@ -107,6 +107,17 @@
         let vsBubble = new ComparisonSortingVisualizer("canvasBubbleSort", 10, 'BubbleSort');
     </script>
 
+    <div>
+        <button onclick="vsBubbleFlag.generateRadomNumbers(10);">Generate Random Numbers</button>
+        <button onclick="vsBubbleFlag.sort();">Bubble Sort</button>
+    </div>
+    <div>
+        <canvas id="canvasBubbleSortFlag" height="150"></canvas>
+    </div>
+
+    <script>
+        let vsBubbleFlag = new ComparisonSortingVisualizer("canvasBubbleSortFlag", 10, 'BubbleSortFlag');
+    </script>
     <hr />
     <hr />
     <hr />
@@ -120,6 +131,7 @@
                 vs2.sort();
                 vs3.sort();
                 vsBubble.sort();
+                vsBubbleFlag.sort();
             }
         </script>
     </div>
