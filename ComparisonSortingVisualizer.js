@@ -4,13 +4,13 @@
     December 14, 2019
 */
 /**
- * Create an instance of quick sort visualizer
+ * Create an instance of comparison sorting visualizer
  * @param {string} canvasID             The ID of the canvas
  * @param {string} numberOfElements     The number of elements
- * @param {string} partitionStyle       The partitioning style. Input 2 or 3
+ * @param {string} algorithm            'BubbleSort' | 'QuickSort2' | 'QuickSort3' |
  */
-class QuickSortVisualizer {
-    constructor(canvasID, numberOfElements, partitionStyle) {
+class ComparisonSortingVisualizer {
+    constructor(canvasID, numberOfElements, algorithm) {
         /***** Private Constants for the Layout *****/
         this.MARGIN_TOP = 50;
         this.MARGIN_LEFT = 10;
@@ -32,7 +32,7 @@ class QuickSortVisualizer {
         }
         else {
             this.ctx = this.canvas.getContext('2d');
-            this.partitionStyle = partitionStyle;
+            this.algorithm = algorithm;
             // Animation Controller
             this.currentAnimationFrame = 0;
             this.lastAnimationFrame = 0;
@@ -107,7 +107,7 @@ class QuickSortVisualizer {
     * Perform sorting
     */
     sort() {
-        switch (this.partitionStyle) {
+        switch (this.algorithm) {
             case 'BubbleSort':
                 this.bubbleSort(this.numbers);
                 break;

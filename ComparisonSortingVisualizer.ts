@@ -3,14 +3,13 @@
 
     December 14, 2019
 */
-
 /**
- * Build a quick sort visualizer
+ * Create an instance of comparison sorting visualizer
  * @param {string} canvasID             The ID of the canvas
  * @param {string} numberOfElements     The number of elements
- * @param {string} partitionStyle       The partitioning style. Input 2 or 3
+ * @param {string} algorithm            'BubbleSort' | 'QuickSort2' | 'QuickSort3' | 
  */
-class QuickSortVisualizer
+class ComparisonSortingVisualizer
 {
     /***** Private Constants for the Layout *****/
     readonly MARGIN_TOP = 50;
@@ -23,7 +22,7 @@ class QuickSortVisualizer
     numbers: number[] = [];
     elements: Shape2D[] = [];
     speedRatio = 0.5;
-    partitionStyle: number = 1 | 2;
+    algorithm: string; //= 'BubbleSort' | 'QuickSort2' | 'QuickSort3' | ;
     pivotIndicator = new Rect(-30, this.MARGIN_TOP - 12, 20, 10, 'pivot', null, null, 'black');
     lowIndex = new Rect(-100, this.MARGIN_TOP - 30, this.CELL_WIDTH, 10, 'h ', null, null, 'blue');
     highIndex = new Rect(-100, this.MARGIN_TOP - 30, this.CELL_WIDTH, 10, ' k', null, null, 'blue');
@@ -38,7 +37,7 @@ class QuickSortVisualizer
     animationScript: [string, any?, any?][] = [];
     animCtrl = new AnimationController();
 
-    constructor(canvasID: string, numberOfElements: number, partitionStyle: number)
+    constructor(canvasID: string, numberOfElements: number, algorithm: string)
     {
         this.canvas = document.getElementById(canvasID);
 
@@ -49,7 +48,7 @@ class QuickSortVisualizer
         else
         {
             this.ctx = this.canvas.getContext('2d');
-            this.partitionStyle = partitionStyle;
+            this.algorithm = algorithm;
 
             // Animation Controller
             this.currentAnimationFrame = 0;
@@ -147,13 +146,19 @@ class QuickSortVisualizer
     */
     sort()
     {
-        if (this.partitionStyle == 2)
+        switch (this.algorithm)
         {
-            this.quickSort2(this.numbers, 0, this.numbers.length - 1);
-        }
-        else
-        {
-            this.quickSort3(this.numbers, 0, this.numbers.length - 1);
+            case 'BubbleSort':
+                this.bubbleSort(this.numbers);
+                break;
+
+            case 'QuickSort2':
+                this.quickSort2(this.numbers, 0, this.numbers.length - 1);
+                break;
+
+            case 'QuickSort3':
+                this.quickSort3(this.numbers, 0, this.numbers.length - 1);
+                break;
         }
 
         this.startAnimationRequest();
@@ -205,7 +210,7 @@ class QuickSortVisualizer
 
         window.addEventListener('resize', this.resizeCanvas.bind(this), false);
         window.addEventListener('orientationchange', this.resizeCanvas.bind(this), false);
-        
+
         this.resizeCanvas();
     }
 
@@ -306,8 +311,28 @@ class QuickSortVisualizer
     }
 
     /****************************************/
-    /*              Algorithm               */
+    /*              Algorithms               */
     /****************************************/
+    bubbleSort(arr: any[])
+    {
+        let n = arr.length;
+        for (let i = 0; i < n - 1; ++i)
+        {
+            this.animationScript.push(["moveIndices", this.lowIndex, i]);
+            for (var j = 0; j < n - i - 1; ++j)
+            {
+                this.animationScript.push(["moveIndices", this.highIndex, j]);
+                if (arr[j] > arr[j + 1])
+                {
+                    this.animationScript.push(["swap", j, j + 1]);
+                    [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                }
+            }
+            this.animationScript.push(['setColor', j, '#E64A19']);
+        }
+        this.animationScript.push(['setColor', 0, '#E64A19']);
+    }
+
     quickSort2(arr: any, h: number, k: number)
     {
         if (h < k)

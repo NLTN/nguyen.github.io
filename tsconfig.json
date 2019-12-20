@@ -7,6 +7,6 @@
     "./EventHandler.ts",
     "./Shape2D.ts",
     "./AnimationController.ts",
-    "./QuickSortVisualizer.ts",
+    "./ComparisonSortingVisualizer.ts",
   ]
 }
