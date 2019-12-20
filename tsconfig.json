@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "watch": true
+  },
+  "files": [
+    "./EventHandler.ts",
+    "./Shape2D.ts",
+    "./AnimationController.ts",
+    "./QuickSortVisualizer.ts",
+  ]
+}
