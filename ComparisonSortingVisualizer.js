@@ -18,6 +18,7 @@ class ComparisonSortingVisualizer {
         this.CELL_HEIGHT = 30;
         this.CELL_SPACING = 5;
         /***** Private member variables *****/
+        this.isSorting = false; // Indicate if the visualizer is playing
         this.numbers = [];
         this.elements = [];
         this.speedRatio = 0.5;
@@ -107,24 +108,29 @@ class ComparisonSortingVisualizer {
     * Perform sorting
     */
     sort() {
-        // Dis-color
-        this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#00796B']);
-        switch (this.algorithm) {
-            case 'BubbleSort':
-                this.bubbleSort(this.numbers);
-                break;
-            case 'BubbleSortFlag':
-                this.bubbleSortFlag(this.numbers);
-                break;
-            case 'QuickSort2':
-                this.quickSort2(this.numbers, 0, this.numbers.length - 1);
-                break;
-            case 'QuickSort3':
-                this.quickSort3(this.numbers, 0, this.numbers.length - 1);
-                break;
+        if (!this.isSorting) // Prevent the user from double-clicking on the button
+         {
+            // Set status
+            this.isSorting = true; // The visualizer is playing. Engage the lock.
+            // Dis-color
+            this.animationScript.push(['setFillColorForMultipleObjects', this.elements, '#00796B']);
+            switch (this.algorithm) {
+                case 'BubbleSort':
+                    this.bubbleSort(this.numbers);
+                    break;
+                case 'BubbleSortFlag':
+                    this.bubbleSortFlag(this.numbers);
+                    break;
+                case 'QuickSort2':
+                    this.quickSort2(this.numbers, 0, this.numbers.length - 1);
+                    break;
+                case 'QuickSort3':
+                    this.quickSort3(this.numbers, 0, this.numbers.length - 1);
+                    break;
+            }
+            this.startAnimationRequest();
+            this.playNextScene();
         }
-        this.startAnimationRequest();
-        this.playNextScene();
     }
     /****************************************/
     /*               Helpers                */
@@ -170,6 +176,9 @@ class ComparisonSortingVisualizer {
         if (this.animationScript.length > 0) {
             this.play(this.animationScript[0]);
             this.animationScript.shift();
+        }
+        else {
+            this.isSorting = false; // The visualizer stops. Release the lock.
         }
     }
     play(args) {
